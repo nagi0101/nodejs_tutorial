@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
+const qs = require("querystring");
 
 function templateHTML(title, list, body) {
   return `
@@ -67,7 +68,7 @@ const app = http.createServer((request, response) => {
         title,
         list,
         `
-        <form action="/process_create" method="POST">
+        <form action="/create_process" method="POST">
         <p><input type="text" name="title" placeholder="title"></p>
         <p>
         <textarea name="description" placeholder="description"></textarea>
@@ -80,6 +81,17 @@ const app = http.createServer((request, response) => {
       );
       response.writeHead(200);
       response.end(template);
+    } else if (pathname === "/create_process") {
+      let body = "";
+      request.on("data", (data) => {
+        body += data;
+      });
+      request.on("end", () => {
+        const post = qs.parse(body);
+        console.log(post);
+        const title = post.title;
+        const description = post.description;
+      });
     } else {
       console.log(pathname);
       response.writeHead(404);
