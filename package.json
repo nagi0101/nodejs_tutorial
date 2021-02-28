@@ -1,0 +1,25 @@
+{
+  "name": "nodejs_tutorial",
+  "version": "1.0.0",
+  "description": "nodejs_tutorial",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagi0101/nodejs_tutorial.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nagi0101/nodejs_tutorial/issues"
+  },
+  "homepage": "https://github.com/nagi0101/nodejs_tutorial#readme",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "sanitize-html": "^2.3.2"
+  }
+}
