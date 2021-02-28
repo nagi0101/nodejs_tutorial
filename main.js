@@ -122,6 +122,28 @@ const app = http.createServer((request, response) => {
         response.writeHead(200);
         response.end(template);
       });
+    } else if (pathname === "/update_process") {
+      let body = "";
+      request.on("data", (data) => {
+        body += data;
+      });
+      request.on("end", () => {
+        const post = qs.parse(body);
+        const id = post.id;
+        const title = post.title;
+        const description = post.description;
+        fs.rename(`./data/${id}`, `./data/${title}`, (renameError) => {
+          fs.writeFile(
+            `./data/${title}`,
+            description,
+            "utf8",
+            (writeFileError) => {
+              response.writeHead(302, { Location: `/?id=${title}` });
+              response.end();
+            }
+          );
+        });
+      });
     } else {
       console.log(pathname);
       response.writeHead(404);
