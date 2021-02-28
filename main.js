@@ -71,13 +71,13 @@ const app = http.createServer((request, response) => {
         list,
         `
         <form action="/create_process" method="POST">
-        <p><input type="text" name="title" placeholder="title"></p>
-        <p>
-        <textarea name="description" placeholder="description"></textarea>
-        </p>
-        <p>
-        <input type="submit">
-        </p>
+          <p><input type="text" name="title" placeholder="title"></p>
+          <p>
+            <textarea name="description" placeholder="description"></textarea>
+          </p>
+          <p>
+            <input type="submit">
+          </p>
         </form>
         `,
         ""
@@ -97,6 +97,30 @@ const app = http.createServer((request, response) => {
           response.writeHead(302, { Location: `/?id=${title}` });
           response.end();
         });
+      });
+    } else if (pathname === "/update") {
+      fs.readFile(`data/${queryData.id}`, "utf8", (err, description) => {
+        const title = queryData.id;
+        const list = templateList(fileList);
+        const template = templateHTML(
+          title,
+          list,
+          `
+          <form action="/update_process" method="POST">
+            <input type="hidden" name="id" value="${title}">
+            <p><input type="text" name="title" placeholder="title" value="${title}"></p>
+            <p>
+              <textarea name="description" placeholder="description">${description}</textarea>
+            </p>
+            <p>
+              <input type="submit">
+            </p>
+          </form>
+          `,
+          `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
+        );
+        response.writeHead(200);
+        response.end(template);
       });
     } else {
       console.log(pathname);
