@@ -2,6 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const qs = require("querystring");
+const path = require("path");
 
 const template = require("./lib/template.js");
 
@@ -11,8 +12,14 @@ const app = http.createServer((request, response) => {
   const pathname = url.parse(_url, true).pathname;
 
   fs.readdir("./data", "utf-8", (err, fileList) => {
+    let filteredId;
+    if (queryData.id !== undefined) {
+      filteredId = path.parse(queryData.id).base;
+    } else {
+      filteredId = undefined;
+    }
     if (pathname === "/") {
-      if (queryData.id === undefined) {
+      if (filteredId === undefined) {
         const title = "Welcome";
         const description = "Hello, Node.js";
         const list = template.list(fileList);
@@ -25,8 +32,8 @@ const app = http.createServer((request, response) => {
         response.writeHead(200);
         response.end(html);
       } else {
-        fs.readFile(`data/${queryData.id}`, "utf8", (err, description) => {
-          const title = queryData.id;
+        fs.readFile(`data/${filteredId}`, "utf8", (err, description) => {
+          const title = filteredId;
           const list = template.list(fileList);
           const html = template.HTML(
             title,
@@ -82,8 +89,8 @@ const app = http.createServer((request, response) => {
         });
       });
     } else if (pathname === "/update") {
-      fs.readFile(`data/${queryData.id}`, "utf8", (err, description) => {
-        const title = queryData.id;
+      fs.readFile(`data/${filteredId}`, "utf8", (err, description) => {
+        const title = filteredId;
         const list = template.list(fileList);
         const html = template.HTML(
           title,
@@ -136,7 +143,8 @@ const app = http.createServer((request, response) => {
       request.on("end", () => {
         const post = qs.parse(body);
         const id = post.id;
-        fs.unlink(`data/${id}`, (error) => {
+        const filteredId = path.parse(id).base;
+        fs.unlink(`data/${filteredId}`, (error) => {
           response.writeHead(302, { Location: "/" });
           response.end();
         });
