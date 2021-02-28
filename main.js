@@ -2,6 +2,8 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const qs = require("querystring");
+const sanitizeHtml = require("sanitize-html");
+
 const path = require("path");
 
 const template = require("./lib/template.js");
@@ -34,11 +36,12 @@ const app = http.createServer((request, response) => {
       } else {
         fs.readFile(`data/${filteredId}`, "utf8", (err, description) => {
           const title = filteredId;
+          const sanitizedDescription = sanitizeHtml(description);
           const list = template.list(fileList);
           const html = template.HTML(
             title,
             list,
-            `<h2>${title}</h2><p>${description}</p>`,
+            `<h2>${title}</h2><p>${sanitizedDescription}</p>`,
             ` <a href="/create">create</a> 
               <a href="/update?id=${title}">update</a>
               <form action="/delete_process?id=${title}" method="POST" onsubmit="
