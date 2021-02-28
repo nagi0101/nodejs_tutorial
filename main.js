@@ -13,6 +13,7 @@ function templateHTML(title, list, body) {
       <body>
         <h1><a href="/">WEB</a></h1>
         ${list}
+        <a href="/create">create</a>
         ${body}
       </body>
     </html>
@@ -33,8 +34,8 @@ const app = http.createServer((request, response) => {
   const queryData = url.parse(_url, true).query;
   const pathname = url.parse(_url, true).pathname;
 
-  if (pathname === "/") {
-    fs.readdir("./data", "utf-8", (err, fileList) => {
+  fs.readdir("./data", "utf-8", (err, fileList) => {
+    if (pathname === "/") {
       if (queryData.id === undefined) {
         const title = "Welcome";
         const description = "Hello, Node.js";
@@ -59,10 +60,31 @@ const app = http.createServer((request, response) => {
           response.end(template);
         });
       }
-    });
-  } else {
-    response.writeHead(404);
-    response.end("not found");
-  }
+    } else if (pathname === "/create") {
+      const title = "WEB - create";
+      const list = templateList(fileList);
+      const template = templateHTML(
+        title,
+        list,
+        `
+        <form action="/process_create" method="POST">
+        <p><input type="text" name="title" placeholder="title"></p>
+        <p>
+        <textarea name="description" placeholder="description"></textarea>
+        </p>
+        <p>
+        <input type="submit">
+        </p>
+        </form>
+        `
+      );
+      response.writeHead(200);
+      response.end(template);
+    } else {
+      console.log(pathname);
+      response.writeHead(404);
+      response.end("not found");
+    }
+  });
 });
 app.listen(3000);
